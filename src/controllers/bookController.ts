@@ -1,8 +1,15 @@
-import { createBookService, getBookByIdService } from "@/services/bookService";
 import { CreateBookInput } from "@/types/book";
-import { Request, response, Response } from "express";
-import { getAllBooksService } from "@/services/bookService";
-import { getBooksByCategoryService } from "@/services/bookService";
+import { Request, Response } from "express";
+import { getBooksByAuthorService } from "@/services/bookService";
+
+import {
+  createBookService,
+  getBookByIdService,
+  getAllBooksService,
+  deleteBookService,
+  getBooksByCategoryService,
+} from "@/services/bookService";
+
 export const createBook = async (req: Request, res: Response) => {
   try {
     const bookData: CreateBookInput = req.body;
@@ -67,4 +74,32 @@ export const getBooksByCategory = async (req: Request, res: Response) => {
           : "Failed to fetch books by category.",
     });
   }
+};
+
+export const deleteBookController = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    const result = await deleteBookService(id);
+    return res.status(result.success ? 200 : 400).json(result);
+  } catch (error) {
+    console.error("Controller error:", error);
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message: "Internal server error.",
+    });
+  }
+};
+
+export const getBooksByAuthorController = async (
+  req: Request,
+  res: Response
+) => {
+  const books = await getBooksByAuthorService(req.params.author);
+  if (books.length === 0)
+    return res
+      .status(404)
+      .json({ success: false, message: "No books found for this author" });
+  res.json({ success: true, data: books });
 };
