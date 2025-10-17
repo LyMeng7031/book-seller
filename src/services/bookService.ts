@@ -1,6 +1,7 @@
 import { bookModel } from "@/models/Book";
 import { BookResult, CreateBookInput } from "@/types/book";
 import { Types } from "mongoose";
+
 export const createBookService = async (
   bookData: CreateBookInput
 ): Promise<BookResult> => {
@@ -88,4 +89,33 @@ export const getBooksByCategoryService = async (categoryId: string) => {
     console.error("Error fetching books by category:", error);
     return { success: false, message: "Failed to fetch books by category." };
   }
+};
+
+export const deleteBookService = async (bookId: string) => {
+  try {
+    const deletedBook = await bookModel.findByIdAndDelete(bookId);
+    if (!deletedBook) {
+      return {
+        success: false,
+        data: null,
+        message: "Book not found or already deleted.",
+      };
+    }
+    return {
+      success: true,
+      data: deletedBook,
+      message: "Book deleted successfully.",
+    };
+  } catch (error) {
+    console.error("Error deleting book:", error);
+    return {
+      success: false,
+      data: null,
+      message: "Failed to delete book.",
+    };
+  }
+};
+
+export const getBooksByAuthorService = async (author: string) => {
+  return await bookModel.find({ author });
 };
