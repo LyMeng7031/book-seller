@@ -119,3 +119,36 @@ export const deleteBookService = async (bookId: string) => {
 export const getBooksByAuthorService = async (author: string) => {
   return await bookModel.find({ author });
 };
+
+export const updateBookService = async (
+  bookId: string,
+  bookData: Partial<CreateBookInput>
+): Promise<BookResult> => {
+  try {
+    const updatedBook = await bookModel.findByIdAndUpdate(bookId, bookData, {
+      new: true, // return the updated document
+      runValidators: true, // ensure data follows schema
+    });
+
+    if (!updatedBook) {
+      return {
+        success: false,
+        data: null,
+        message: "Book not found.",
+      };
+    }
+
+    return {
+      success: true,
+      data: updatedBook,
+      message: "Book updated successfully.",
+    };
+  } catch (error) {
+    console.error("Error updating book:", (error as Error).message || error);
+    return {
+      success: false,
+      data: null,
+      message: "Failed to update book.",
+    };
+  }
+};
