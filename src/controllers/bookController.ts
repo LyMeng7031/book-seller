@@ -1,6 +1,9 @@
 import { CreateBookInput } from "@/types/book";
 import { Request, Response } from "express";
-import { getBooksByAuthorService } from "@/services/bookService";
+import {
+  getBooksByAuthorService,
+  updateBookService,
+} from "@/services/bookService";
 
 import {
   createBookService,
@@ -102,4 +105,20 @@ export const getBooksByAuthorController = async (
       .status(404)
       .json({ success: false, message: "No books found for this author" });
   res.json({ success: true, data: books });
+};
+
+export const updateBook = async (req: Request, res: Response) => {
+  try {
+    const bookId = req.params.id;
+    const bookData = req.body;
+    const result = await updateBookService(bookId, bookData);
+    const statusCode = result.success ? 200 : 404;
+    res.status(statusCode).json(result);
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message:
+        error instanceof Error ? error.message : "Failed to update book.",
+    });
+  }
 };
