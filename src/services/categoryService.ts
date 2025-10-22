@@ -2,9 +2,9 @@ import { categoryModel, ICategory } from "@/models/categoryModel";
 import { Request, Response } from "express";
 
 export const createCategoryService = async (req: Request, res: Response) => {
-    const userId = req.body.userId;
+  const userId = req.body.userId;
   try {
-    const {name,bookId} = req.body;
+    const { name, bookId } = req.body;
 
     // Optional: check if category with same name & bookId already exists
     const existing = await categoryModel.findOne({
@@ -14,7 +14,11 @@ export const createCategoryService = async (req: Request, res: Response) => {
     });
 
     if (existing) {
-      return { success: false, data: null, message: "Category already exists." };
+      return {
+        success: false,
+        data: null,
+        message: "Category already exists.",
+      };
     }
 
     const newCategory = await categoryModel.create({
@@ -30,6 +34,17 @@ export const createCategoryService = async (req: Request, res: Response) => {
     };
   } catch (error) {
     console.error("Error creating category:", error);
-    return { success: false, data: null, message: "Failed to create category." };
+    return {
+      success: false,
+      data: null,
+      message: "Failed to create category.",
+    };
   }
+};
+export const updateCategoryService = async (id: string, name: string) => {
+  return await categoryModel.findByIdAndUpdate(
+    id,
+    { name },
+    { new: true } // return updated category
+  );
 };
