@@ -2,7 +2,6 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { JwtPayloadInput } from "../types/user";
 
-
 export const roleCheck = (allowedRoles: string[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -18,7 +17,7 @@ export const roleCheck = (allowedRoles: string[]) => {
       const decoded = jwt.verify(token, secret) as JwtPayloadInput;
       // CRITICAL: Rebuild req.user with ONLY these fields – hides iat/exp forever
       const sanitizedUser = {
-        id: decoded.userId,
+        id: decoded?.userId,
         role: decoded.role,
         email: decoded.email,
         userName: decoded.userName,
@@ -31,12 +30,11 @@ export const roleCheck = (allowedRoles: string[]) => {
           .json({ message: "Forbidden: Insufficient role" });
       }
 
-      (req as any).user = sanitizedUser;
+       (req as any).user = decoded;
       next();
     } catch (error) {
       return res.status(401).json({ message: "Unauthorized: Invalid token" });
     }
   };
 };
-
 // create role middleware here then go to define routes for Admin

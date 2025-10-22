@@ -13,11 +13,7 @@ const categorySchema = new Schema<ICategory>(
       ref: "User", // reference to User model
       required: true,
     },
-    bookId: {
-      type: Schema.Types.ObjectId,
-      ref: "Book", // reference to Book model
-      required: true,
-    },
+
     name: {
       type: String,
       required: true,
