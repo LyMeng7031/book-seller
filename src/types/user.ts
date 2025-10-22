@@ -1,5 +1,5 @@
 export interface IUser {
-  _id?: String;
+  id?: String;
   firstName: String;
   lastName: String;
   userName: String;

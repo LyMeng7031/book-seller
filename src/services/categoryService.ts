@@ -2,15 +2,12 @@ import { categoryModel, ICategory } from "@/models/categoryModel";
 import { Request, Response } from "express";
 
 export const createCategoryService = async (req: Request, res: Response) => {
-    const userId = req.body.userId;
+  const {name} = req.body;
+    const userId = req.user?.id; // Assuming user ID is attached to req.user after authentication
+    console.log("User ID in createCategor yService:", userId);
   try {
-    const {name,bookId} = req.body;
-
-    // Optional: check if category with same name & bookId already exists
     const existing = await categoryModel.findOne({
       name: name,
-      bookId: bookId,
-      userId: userId,
     });
 
     if (existing) {
@@ -19,7 +16,6 @@ export const createCategoryService = async (req: Request, res: Response) => {
 
     const newCategory = await categoryModel.create({
       name,
-      bookId,
       userId,
     });
 
