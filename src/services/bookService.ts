@@ -1,6 +1,7 @@
 import { bookModel } from "@/models/Book";
 import { BookResult, CreateBookInput } from "@/types/book";
 import { Types } from "mongoose";
+import { Request, Response } from "express";
 
 export const createBookService = async (
   bookData: CreateBookInput
@@ -23,7 +24,7 @@ export const createBookService = async (
   }
 };
 
-export const getAllBooksService = async (): Promise<BookResult[]> => {
+export const getAllBooksService = async (req: Request, res: Response) => {
   try {
     const books = await bookModel.find();
     return books.map((book) => ({
