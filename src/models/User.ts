@@ -11,7 +11,6 @@ const userSchema = new Schema(
     password: { type: String, required: true },
     role: { type: String, enum: ["user", "admin"], default: "user" },
     phone: { type: String, required: true, unique: true },
-    
   },
   { timestamps: true }
 );

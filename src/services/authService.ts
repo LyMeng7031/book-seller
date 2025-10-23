@@ -10,8 +10,12 @@ export const Registerservice = async (req: Request, res: Response) => {
     if (existEmail) {
       return res.status(400).json({ message: "Email already exists" });
     }
+    const existUserName = await UserModel.findOne({ userName });
+    if (existUserName) {
+      return res.status(400).json({ message: "Username already exists" });
+    }
     //hash password before saving to database (omitted for brevity)
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
     //create new user
     const newUser = new UserModel({
       firstName,

@@ -1,42 +1,28 @@
-import { Request, Response } from "express";
-import {
-  createCategoryService,
-  updateCategoryService,
-} from "@/services/categoryService";
+import { categoryModel } from "@/models/categoryModel";
+import { createCategoryService } from "@/services/categoryService";
+import { Request,Response } from "express";
+interface IServiceResult {
+  success: boolean;
+  data: any;
+  message: string;
+}
 
-export const createCategoryController = async (req: Request, res: Response) => {
-  // try {
-    const result = await createCategoryService(req, res);
-    return res.status(result.success ? 201 : 400).json(result);
-  
-};
-export const updateCategoryController = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const { name } = req.body;
-
-  if (!name) {
-    return res
-      .status(400)
-      .json({ success: false, message: "Category name is required" });
-  }
-
+// Create Category Service
+export const createCategoryController = async(req:Request, res:Response) =>{
+  const result = await createCategoryService(req, res);
+  return result;
+}
+// Update Category Service
+export const updateCategoryService = async (id: string, name: string) => {
   try {
-    const updatedCategory = await updateCategoryService(id, name);
-    if (!updatedCategory) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Category not found" });
-    }
-
-    res.json({
-      success: true,
-      message: "Category updated successfully",
-      data: updatedCategory,
-    });
+    const updatedCategory = await categoryModel.findByIdAndUpdate(
+      id,
+      { name },
+      { new: true }
+    );
+    return updatedCategory;
   } catch (error) {
     console.error("Error updating category:", error);
-    res
-      .status(500)
-      .json({ success: false, message: "Failed to update category" });
+    throw new Error("Failed to update category");
   }
 };

@@ -12,10 +12,6 @@ router.get("/:id", getBookById);
 router.delete("/delete-book/:id", deleteBook);
 router.get("/author/:author", getBooksByAuthorController);
 router.put("/edit-book/:id", updateBook);
-
-router;
-router.put("/edit-book/:id", updateBook);
-
 router.delete("/books/:id", deleteBook);
 // router.delete("/delete-book/:id", deleteBook);
 router.get("/books/author/:author", getBooksByAuthorController);
