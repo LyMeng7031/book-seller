@@ -1,9 +1,6 @@
 import { CreateBookInput } from "@/types/book";
 import { Request, Response } from "express";
-import {
-  getBooksByAuthorService,
-  updateBookService,
-} from "@/services/bookService";
+
 
 import {
   createBookService,
@@ -11,6 +8,8 @@ import {
   getAllBooksService,
   deleteBookService,
   getBooksByCategoryService,
+  getBooksByAuthorService,
+  updateBookService,
 } from "@/services/bookService";
 
 export const createBook = async (req: Request, res: Response) => {
@@ -29,8 +28,8 @@ export const createBook = async (req: Request, res: Response) => {
 
 export const getAllBooks = async (req: Request, res: Response) => {
   try {
-    const result = await getAllBooksService();
-    res.status(200).json(result);
+    const result = await getAllBooksService(req, res);
+  res.status(200).json(result);
   } catch (error) {
     res.status(400).json({
       success: false,
