@@ -70,4 +70,4 @@ The system ensures reliability, accuracy, and smooth user experience for both bu
 ### Step 1: Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/readable.git
+git clone [https://github.com/yourusername/readable.git](https://github.com/LyMeng7031/book-seller.git)
