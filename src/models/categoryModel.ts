@@ -1,26 +1,23 @@
-import { Schema, model, Document, Types } from "mongoose";
-
-export interface ICategory extends Document {
-  userId: Types.ObjectId; // reference to user
-  bookId: Types.ObjectId; // reference to book
-  name: string;
-}
+import { ICategory } from "@/types/category";
+import mongoose, { Schema } from "mongoose";
 
 const categorySchema = new Schema<ICategory>(
   {
-    userId: {
-      type: Schema.Types.ObjectId,
-      ref: "User", // reference to User model
-      required: true,
-    },
-
     name: {
       type: String,
       required: true,
-      trim: true,
+    },
+    desc: {
+      type: String,
+      required: true,
+    },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
   },
   { timestamps: true }
 );
 
-export const categoryModel = model<ICategory>("Category", categorySchema);
+export default mongoose.model<ICategory>("Category", categorySchema);
