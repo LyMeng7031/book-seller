@@ -1,79 +1,74 @@
-import { UserModel } from "../models/User";
+
+import userModel from "@/models/User";
 import { Request, Response } from "express";
+import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-import Jwt from "jsonwebtoken";
-export const Registerservice = async (req: Request, res: Response) => {
-  const { email, password, firstName, lastName, userName, phone, age } =
-    req.body;
+
+const generateToken = (userId: string, roles: string[]): string => {
+  return jwt.sign({ userId, roles }, process.env.JWT_SECRET!, {
+    expiresIn: "7d",
+  });
+};
+
+export const registerService = async (req: Request, res: Response) => {
   try {
-    const existEmail = await UserModel.findOne({ email });
+    const { email, password, firstName, lastName, phone, age } = req.body;
+    const existEmail = await userModel.findOne({ email });
+    const existPhone = await userModel.findOne({ phone });
     if (existEmail) {
-      return res.status(400).json({ message: "Email already exists" });
+      res.status(400).json({ message: "Email already exist!" });
     }
-    const existUserName = await UserModel.findOne({ userName });
-    if (existUserName) {
-      return res.status(400).json({ message: "Username already exists" });
+    if (existPhone) {
+      res.status(400).json({ message: "Phone already exist!" });
     }
-    //hash password before saving to database (omitted for brevity)
-    const hashedPassword = await bcrypt.hash(password, 10);
-    //create new user
-    const newUser = new UserModel({
+    //bcrypt password
+    const hashPassword = await bcrypt.hash(password, 12);
+    const newUser = new userModel({
+      email,
+      password: hashPassword,
       firstName,
       lastName,
-      userName,
-      age,
       phone,
-      email,
-      password: hashedPassword,
-      // role: "Customer",
+      age,
     });
-    //save user to database
     await newUser.save();
-    res.status(201).json({ message: "User registered successfully", newUser });
-  } catch (error) {
-    console.error("Error in register service:", error);
+
+    const token = generateToken(newUser._id, newUser.roles);
+
+    res.status(201).json({
+      data: newUser,
+      token,
+    });
+  } catch (error: any) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 
-export const Loginservice = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
+export const LoginService = async (req: Request, res: Response) => {
   try {
-    const existUser = await UserModel.findOne({ email });
-    if (!existUser) {
-      return res.status(400).json({ message: "Invalid credentials" });
+    const { email, password } = req.body;
+    const existEmail = await userModel.findOne({ email });
+    if (!existEmail) {
+      return res.status(400).json({ message: "Email not exist!" });
     }
-    //compare password
-    const isMatch = await bcrypt.compare(
-      password,
-      existUser.password as string
-    );
-    if (!isMatch) {
-      return res.status(400).json({ message: "Invalid credentials" });
+
+    const isPasswordValid = await bcrypt.compare(password, existEmail.password);
+    if (!isPasswordValid) {
+      return res.status(400).json({ message: "Password not correct" });
     }
-    //generate JWT token (omitted for brevity)
-    const token = Jwt.sign(
-      {
-        id: existUser._id,
-        role: existUser.role,
-        email: existUser.email,
-        userName: existUser.userName,
-      },
-      process.env.JWT_SECRET || "SECRET_KEY",
-      {}
-    ); // update JWT Token Generation over here then we have to Create Role Middleware go to Create src/middlewares/roleMiddleware.ts
+    const token = generateToken(existEmail._id, existEmail.roles);
 
-    return res.status(200).json({ message: "Login successful", token });
-  } catch (error) {
-    console.error("Error in login service:", error);
-  }
-};
-
-export const logoutservice = async (req: Request, res: Response) => {
-  try {
-    // Invalidate the token on the client side by instructing the client to delete it.
-    res.status(200).json({ message: "Logout successful" });
-  } catch (error) {
-    console.error("Error in logout service:", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(200).json({
+      data: existEmail,
+      token,
+    });
+  } catch (error: any) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
   }
 };

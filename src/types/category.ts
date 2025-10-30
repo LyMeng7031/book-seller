@@ -1,7 +1,6 @@
-import { ICategory } from "@/models/categoryModel";
-
-export interface CategoryResult {
-  success: boolean;
-  data: ICategory | null;
-  message?: string;
+export interface ICategory {
+  id: string;
+  name: string;
+  desc: string;
+  userId: Object;
 }

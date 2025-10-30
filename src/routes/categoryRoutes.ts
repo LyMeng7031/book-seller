@@ -1,10 +1,41 @@
-import express from "express";
-import { createCategoryController } from "@/controllers/categoryController";
-import { roleCheck } from "@/Middlewares/roleMiddleware";
+import {
+  CreateCategoryController,
+  DeleteCategoryController,
+  GetAllCategoriesController,
+  GetCategoryController,
+  UpdateCategoryController,
+} from "@/controllers/categoryController";
+import { authenticate, authorize } from "@/Middlewares/roleMiddleware";
+import { Router } from "express";
 
-const router = express.Router();
+const router = Router();
 
-// POST /api/categories
-router.post("/create-categories", roleCheck(["admin" , "user"]), createCategoryController);
+router.post(
+  "/create-category",
+  authenticate,
+  authorize(["admin"]),
+  CreateCategoryController
+);
+router.get(
+  "/categories",
+  authenticate,
+  authorize(["admin"]),
+  GetAllCategoriesController
+);
+router.put(
+  "/update-category/:id",
+  authenticate,
+  authorize(["admin"]),
+  UpdateCategoryController
+);
+
+router.get("/:id", authenticate, authorize(["admin"]), GetCategoryController);
+
+router.delete(
+  "/delete-category/:id",
+  authenticate,
+  authorize(["admin"]),
+  DeleteCategoryController
+);
 
 export default router;
